@@ -3,6 +3,8 @@ import { processGlb } from '../utils/gltf'
 export default defineEventHandler(async (event) => {
   const form = await readBody(event)
   const url = form?.url
+  const filename = form?.filename || 'decompressed'
+
   if (!url) {
     throw createError({ statusCode: 400 })
   }
@@ -11,11 +13,11 @@ export default defineEventHandler(async (event) => {
     responseType: 'arrayBuffer'
   })
 
-  const compModel = await processGlb(new Uint8Array(dat), true)
+  const decompModel = await processGlb(new Uint8Array(dat), false)
 
   setResponseHeader(event, 'content-type', 'application/octet-stream')
-  setResponseHeader(event, 'Content-Length', compModel.length)
-  setResponseHeader(event, 'Content-Disposition', 'attachment; filename=compressed.glb')
+  setResponseHeader(event, 'Content-Length', decompModel.length)
+  setResponseHeader(event, 'Content-Disposition', `attachment; filename=${filename}.glb`)
 
-  return compModel
+  return decompModel
 })

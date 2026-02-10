@@ -1,0 +1,10 @@
+services:
+  gltf-compressor:
+    image: node:22-alpine
+    working_dir: /app
+    ports:
+      - "3003:3000"
+    volumes:
+      - ./app:/app
+    command: node app/server/index.mjs
+    restart: unless-stopped
